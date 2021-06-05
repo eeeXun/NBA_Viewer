@@ -4,6 +4,7 @@ import os, json
 class Fetch:
     def __init__(self):
         if not os.path.exists("data.json"):
+            self.data = {}
             self.start()
     def start(self):
         self.setBrowser()
@@ -21,11 +22,10 @@ class Fetch:
         url = "https://www.nba.com/teams"
         self.browser.get(url)
         info = self.browser.find_elements_by_class_name("TeamFigure_tfMainLink__mH93D.Anchor_external__Mh-vB.Anchor_complexLink__2NtkO")
-        self.teams = [i.text for i in info]
+        self.data["teams"] = dict.fromkeys([i.text for i in info])
     def writeData(self):
-        jsobj = {"teams": self.teams}
         with open("data.json", "w") as f:
-            json.dump(jsobj, f)
+            json.dump(self.data, f)
     def end(self):
         self.browser.close()
 

@@ -4,7 +4,7 @@
 - You need to have a `drivePath.txt` file, which contains your [chrome drive](https://sites.google.com/chromium.org/driver/), in this repository
 - `GetINFO.py` would generate `data.json`, and `UI.py` would take this data to draw someting
 - Start
-    - `python3 main.py`
+    - `python main.py`
 
 ## `data.json` Structure
 - "teams"
