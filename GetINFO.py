@@ -5,7 +5,6 @@ class Fetch:
     def __init__(self):
         if not os.path.exists("data.json"):
             self.start()
-        self.start()
     def start(self):
         self.setBrowser()
         self.getTeams()
