@@ -18,6 +18,7 @@ class Fetch:
         #self.writeData()
         self.getPlayer()
         self.end()
+
     def setBrowser(self):
         with open("drivePath.txt", "r") as f:
             self.drivePath = f.read()[:-1]
@@ -32,7 +33,8 @@ class Fetch:
         access_buttom=self.browser.find_element_by_id('onetrust-accept-btn-handler')
         access_buttom.click() 
         teams = self.browser.find_elements_by_class_name("TeamFigure_tfMainLink__mH93D.Anchor_external__Mh-vB.Anchor_complexLink__2NtkO")
-        self.data["teams"] = dict.fromkeys([i.text for i in teams], {"teamData": {}, "playerData": {}})
+        self.data["teams"] = {team.text: {"teamData": {}, "playerData": {}} for team in teams}
+        print(self.data)
         profiles = self.browser.find_elements_by_link_text("Profile")
         pLinks = [i.get_attribute("href") for i in profiles]
         self.writeData()
@@ -40,13 +42,12 @@ class Fetch:
     def getTeamDatas(self, links):
         for link in links:
             self.browser.get(link)
-            teamName = self.browser.find_element_by_class_name("TeamHeader_name__1i3fv")
-            tName = " ".join(teamName.text.split())
+            teamName = " ".join(self.browser.find_element_by_class_name("TeamHeader_name__1i3fv")
+                                .text.split())
             teamINFO = self.browser.find_elements_by_class_name("TeamHeader_rankValue__1pj3i")
             dataColumn = ["PPG", "RPG", "APG", "OPPG"]
             for i in range(4):
-                self.data["teams"][tName]["teamData"][dataColumn[i]] = teamINFO[i].text
-            print(tName)
+                self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
             print(self.data)
     def getPlayer(self):
         with open('data.json', errors='ignore') as jsonfile:
@@ -112,6 +113,7 @@ class Fetch:
     def writeData(self):
         with open("data.json", "w") as f:
             json.dump(self.data, f)
+
     def end(self):
         self.browser.close()
 
