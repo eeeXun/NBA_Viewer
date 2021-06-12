@@ -1,10 +1,13 @@
 from selenium import webdriver
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 import os, json, time
 
 class Fetch:
     def __init__(self):
         if not os.path.exists("data.json"):
             self.data = {}
+            self.badGateway = "An error (502 Bad Gateway) has occurred in response to this request."
             self.start()
 
     def start(self):
@@ -24,24 +27,25 @@ class Fetch:
     def getTeams(self):
         url = "https://www.nba.com/teams"
         self.browser.get(url)
-        teams = self.browser.find_elements_by_class_name("TeamFigure_tfMainLink__mH93D.Anchor_external__Mh-vB.Anchor_complexLink__2NtkO")
-        self.data["teams"] = {team.text: {"teamData": {}, "playerData": {}} for team in teams}
-        print(self.data)
-        profiles = self.browser.find_elements_by_link_text("Profile")
-        pLinks = [i.get_attribute("href") for i in profiles]
-        self.getTeamDatas(pLinks)
+        self.data["teams"] = {}
+        bsObj = BeautifulSoup(self.browser.page_source, "html.parser")
+        teamsInfo = bsObj.findAll("div", {"class": "TeamFigure_tf__2RSkP"})
+        for teamInfo in teamsInfo:
+            teamName = teamInfo.find("a", {"class": "TeamFigure_tfMainLink__mH93D Anchor_external__Mh-vB Anchor_complexLink__2NtkO"}).get_text()
+            profile = teamInfo.find("a", {"class": "TeamFigureLink_teamFigureLink__3uOct Anchor_complexLink__2NtkO"})["href"]
+            profileLink = urljoin(url, profile)
+            self.data["teams"][teamName] = {"teamData":{}, "playerData": {}}
+            self.getTeamDatas(teamName, profileLink)
 
-    def getTeamDatas(self, links):
-        for link in links:
-            self.browser.get(link)
-            teamName = " ".join(self.browser.find_element_by_class_name("TeamHeader_name__1i3fv")
-                                .text.split())
+    def getTeamDatas(self, teamName, link):
+        self.browser.get(link)
+        if self.browser.find_element_by_tag_name("body").text == self.badGateway:
+            self.getTeamDatas(teamName, link)
+        else:
             teamINFO = self.browser.find_elements_by_class_name("TeamHeader_rankValue__1pj3i")
             dataColumn = ["PPG", "RPG", "APG", "OPPG"]
             for i in range(4):
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
-            time.sleep(1)
-            print(teamName)
 
     def writeData(self):
         with open("data.json", "w") as f:
