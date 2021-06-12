@@ -16,12 +16,18 @@
             - "OPPG": 111.2
         - "playerData":
             - "Jayson Tatum"
-                - "NO": 0
-                - "POS": "F-G"
-                - "HEIGHT": "6-8"
-                - "WEIGHT": "210lbs"
-                - "AGE": 23
-                - "EXP": 3
+                - "Info"
+                    - "NO": 0
+                    - "POS": "F-G"
+                    - "HEIGHT": "6-8"
+                    - "WEIGHT": "210lbs"
+                    - "AGE": 23
+                    - "EXP": 3
+                - "State"
+                    - "PPG"
+                    - "RPG"
+                    - "APG"
+                    - "OPPG"   
             - "Carsen Edwards"
                 - ...
     - "Brooklyn Nets"
