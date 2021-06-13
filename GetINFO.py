@@ -1,5 +1,5 @@
 from selenium import webdriver
-import os, json, time
+import os, json
 
 class Fetch:
     def __init__(self):
@@ -26,7 +26,6 @@ class Fetch:
         self.browser.get(url)
         teams = self.browser.find_elements_by_class_name("TeamFigure_tfMainLink__mH93D.Anchor_external__Mh-vB.Anchor_complexLink__2NtkO")
         self.data["teams"] = {team.text: {"teamData": {}, "playerData": {}} for team in teams}
-        print(self.data)
         profiles = self.browser.find_elements_by_link_text("Profile")
         pLinks = [i.get_attribute("href") for i in profiles]
         self.getTeamDatas(pLinks)
@@ -40,8 +39,6 @@ class Fetch:
             dataColumn = ["PPG", "RPG", "APG", "OPPG"]
             for i in range(4):
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
-            time.sleep(1)
-            print(teamName)
 
     def writeData(self):
         with open("data.json", "w") as f:
