@@ -46,6 +46,8 @@ class Fetch:
             dataColumn = ["PPG", "RPG", "APG", "OPPG"]
             for i in range(4):
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
+            IMG = self.browser.find_element_by_class_name("TeamHeader_teamLogoBW__QkK7w.TeamLogo_logo__1CmT9").get_attribute("src")
+            self.data["teams"][teamName]["teamData"]["IMG"] = IMG
 
     def writeData(self):
         with open("data.json", "w") as f:
