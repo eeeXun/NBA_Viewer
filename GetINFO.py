@@ -1,7 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-import os, json, time
+import os, json
 
 class Fetch:
     def __init__(self):
