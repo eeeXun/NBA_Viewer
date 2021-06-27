@@ -1,17 +1,15 @@
 from selenium import webdriver
-import time
-from selenium.webdriver.support.select import Select
-from selenium.common.exceptions import StaleElementReferenceException
 from bs4 import BeautifulSoup
-import os, json
-import time
+from urllib.parse import urljoin
+import os, json, time
 
 class Fetch:
     def __init__(self):
-        #if not os.path.exists("data.json"):
-        self.data = {}
-        self.start()
-           
+        if not os.path.exists("data.json"):
+            self.data = {}
+            self.badGateway = "An error (502 Bad Gateway) has occurred in response to this request."
+            self.start()
+
     def start(self):
         self.setBrowser()
         self.getTeams()
@@ -30,86 +28,28 @@ class Fetch:
     def getTeams(self):
         url = "https://www.nba.com/teams"
         self.browser.get(url)
-        access_buttom=self.browser.find_element_by_id('onetrust-accept-btn-handler')
-        access_buttom.click() 
-        teams = self.browser.find_elements_by_class_name("TeamFigure_tfMainLink__mH93D.Anchor_external__Mh-vB.Anchor_complexLink__2NtkO")
-        self.data["teams"] = {team.text: {"teamData": {}, "playerData": {}} for team in teams}
-        print(self.data)
-        profiles = self.browser.find_elements_by_link_text("Profile")
-        pLinks = [i.get_attribute("href") for i in profiles]
-        self.writeData()
-        #self.getTeamDatas(pLinks)
-    def getTeamDatas(self, links):
-        for link in links:
-            self.browser.get(link)
-            teamName = " ".join(self.browser.find_element_by_class_name("TeamHeader_name__1i3fv")
-                                .text.split())
+        self.data["teams"] = {}
+        bsObj = BeautifulSoup(self.browser.page_source, "html.parser")
+        teamsInfo = bsObj.findAll("div", {"class": "TeamFigure_tf__2RSkP"})
+        for teamInfo in teamsInfo:
+            teamName = teamInfo.find("a", {"class": "TeamFigure_tfMainLink__mH93D Anchor_external__Mh-vB Anchor_complexLink__2NtkO"}).get_text()
+            profile = teamInfo.find("a", {"class": "TeamFigureLink_teamFigureLink__3uOct Anchor_complexLink__2NtkO"})["href"]
+            profileLink = urljoin(url, profile)
+            self.data["teams"][teamName] = {"teamData":{}, "playerData": {}}
+            self.getTeamDatas(teamName, profileLink)
+
+    def getTeamDatas(self, teamName, link):
+        self.browser.get(link)
+        if self.browser.find_element_by_tag_name("body").text == self.badGateway:
+            self.getTeamDatas(teamName, link)
+        else:
             teamINFO = self.browser.find_elements_by_class_name("TeamHeader_rankValue__1pj3i")
             dataColumn = ["PPG", "RPG", "APG", "OPPG"]
             for i in range(4):
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
-            print(self.data)
-    def getPlayer(self):
-        with open('data.json', errors='ignore') as jsonfile:
-                inputdata=json.load(jsonfile, strict=False)
-        team=inputdata["teams"].keys()
-        print("OK")
-        teamlist=[*team]
-        shortname=[]
-        for formal in team:
-            buff=formal.split(" ")
-            shortname.append(buff[len(buff)-1])
-        shortname[18]="Trail Blazers"
-        url="https://www.nba.com/players"
-        self.browser.get(url)
-        teamnum=-1
-        for i in shortname:
-            teamnum+=1
-            thisteam=teamlist[teamnum]
-            time.sleep(1)
-            try:
-                find_teams=Select(self.browser.find_element_by_name('TEAM_NAME'))
-                playerlinks=[]
-                find_teams.select_by_value(i)
-                html=self.browser.page_source
-                bsobj=BeautifulSoup(html,"html.parser")
-                playerlink=bsobj.findAll('a',{'class':'flex items-center t6 Anchor_complexLink__2NtkO'})
-                for pl in playerlink:
-                    playerlinks.append(pl["href"])
-                for plinkss in playerlinks:
-                    time.sleep(1)
-                    self.browser.get("https://www.nba.com/"+plinkss)
-                    html=self.browser.page_source
-                    bsobj=BeautifulSoup(html,"html.parser")
-                    playerINFO = bsobj.findAll('p',{"class":"PlayerSummary_playerStatValue__3hvQY"})
-                    dataColumn = ["PPG", "RPG", "APG", "PIE"]
-                    nameofplayer=bsobj.findAll('p',{"class":"PlayerSummary_playerNameText__K7ZXO"})
-                    datanum=0
-                    #print(self.data["teams"])
-
-                    self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]={"Info":{},"State":{}}
-                    print(thisteam)
-                    self.writeData()
-                    # print(self.data["teams"])
-                    os.system("pause")
-                    self.writeData()
-                    for i in playerINFO:
-                        self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+nameofplayer[1].get_text()]["State"][dataColumn[datanum]] = i.get_text()  #teamlist=tname 
-                        datanum+=1
-                    infoOfPlayer=bsobj.findAll('p',{"class":"PlayerSummary_playerInfoValue__mSfou"})
-                    infolabel=bsobj.findAll('p',{"class":"PlayerSummary_playerInfoLabel__gBXXP"})
-                    infolist=[]
-                    for k in infolabel:
-                        infolist.append(k.get_text())
-                    infonum=0
-                    for ii in infoOfPlayer:
-                        self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+nameofplayer[1].get_text()]["Info"][infolist[infonum]] = ii.get_text()  #teamlist=tname 
-                        infonum+=1
-                    print(teamnum)
-                    self.writeData()
-                self.browser.get(url)
-            except StaleElementReferenceException:
-                pass
+            IMG = self.browser.find_element_by_class_name("TeamHeader_teamLogoBW__QkK7w.TeamLogo_logo__1CmT9").get_attribute("src")
+            self.data["teams"][teamName]["teamData"]["IMG"] = IMG
+           
     def writeData(self):
         with open("data.json", "w") as f:
             json.dump(self.data, f)

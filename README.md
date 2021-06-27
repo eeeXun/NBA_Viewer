@@ -14,6 +14,7 @@
             - "RPG": 44.3
             - "APG": 23.5
             - "OPPG": 111.2
+            - "IMG": "https://cdn.nba.com/logos/nba/1610612738/global/L/logo.svg"
         - "playerData":
             - "Jayson Tatum"
                 - "Info"
