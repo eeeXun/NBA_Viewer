@@ -43,31 +43,33 @@ class Fetch:
         if self.browser.find_element_by_tag_name("body").text == self.badGateway:
             self.getTeamDatas(teamName, link)
         else:
-            self.getPlayerName(link,teamName)
-            print(teamName,"finish")
             teamINFO = self.browser.find_elements_by_class_name("TeamHeader_rankValue__1pj3i")
             dataColumn = ["PPG", "RPG", "APG", "OPPG"]
             for i in range(4):
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
             IMG = self.browser.find_element_by_class_name("TeamHeader_teamLogoBW__QkK7w.TeamLogo_logo__1CmT9").get_attribute("src")
             self.data["teams"][teamName]["teamData"]["IMG"] = IMG
-            
+            self.getPlayerName(link,teamName)
+            print(teamName,"finish")
             
     def getPlayerName(self,link,teamName):
         html=self.browser.page_source
         bsobj=BeautifulSoup(html,"html.parser")
-        playername=bsobj.findAll('a',{'class':'Anchor_complexLink__2NtkO'})
+        playername2=bsobj.findAll('td',{'class':'primary text'})
+        #playername=bsobj.findAll('a',{'class':'Anchor_complexLink__2NtkO'})
         playernum=bsobj.findAll('td',{'class':'text TeamRoster_extraPadding__2E9RF'})
         playerpos=bsobj.findAll('td',{'class':'text'})
         playerlink=[]
         q=0   
-        for i in range(107,125):
-            self.data["teams"][teamName]["playerData"][playername[i].get_text()]={"Info":{},"State":{}}
-            self.data["teams"][teamName]["playerData"][playername[i].get_text()]["Info"]["PLAYER_POSITION"]=playerpos[2+q*9].get_text()
-            self.data["teams"][teamName]["playerData"][playername[i].get_text()]["Info"]["PLAYER_NUMBER"]=playernum[q].get_text()
+        t=0
+        for i in playername2:
+            self.data["teams"][teamName]["playerData"][i.get_text()]={"Info":{},"State":{}}
+            self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_POSITION"]=playerpos[2+q*9].get_text()
+            self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_NUMBER"]=playernum[q].get_text()
             q+=1
-            playerlink.append("https://www.nba.com"+playername[i]["href"])
-        #self.writeData()
+            links=i.findAll('a')
+            playerlink.append("https://www.nba.com"+links[0]["href"])
+        self.writeData()
         for plink in playerlink:
             self.getPlayerInfo(plink,teamName)
     def getPlayerInfo(self,link,thisteam):
