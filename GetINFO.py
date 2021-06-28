@@ -53,6 +53,56 @@ class Fetch:
             imgPath = "./teamPic/{}.png".format(teamName)
             svg2png(url=imgURL, write_to=imgPath)
             self.data["teams"][teamName]["teamData"]["IMG"] = imgPath
+            self.getPlayerName(link,teamName)
+
+    def getPlayerName(self,link,teamName):
+        html=self.browser.page_source
+        bsobj=BeautifulSoup(html,"html.parser")
+        playername2=bsobj.findAll('td',{'class':'primary text'})
+        playernum=bsobj.findAll('td',{'class':'text TeamRoster_extraPadding__2E9RF'})
+        playerpos=bsobj.findAll('td',{'class':'text'})
+        playerlink=[]
+        q=0
+        t=0
+        for i in playername2:
+            self.data["teams"][teamName]["playerData"][i.get_text()]={"Info":{},"State":{}}
+            self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_POSITION"]=playerpos[2+q*9].get_text()
+            self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_NUMBER"]=playernum[q].get_text()
+            q+=1
+            links=i.findAll('a')
+            playerlink.append("https://www.nba.com"+links[0]["href"])
+        self.writeData()
+        blank=0
+        for plink in playerlink:
+            if(self.data["teams"][teamName]["playerData"][playername2[blank].get_text()]["Info"]["PLAYER_NUMBER"]!=""):
+                self.getPlayerInfo(plink,teamName)
+
+    def getPlayerInfo(self,link,thisteam):
+        self.browser.get(link)
+        if self.browser.find_element_by_tag_name("body").text == self.badGateway:
+            self.getPlayerInfo(link,thisteam)
+        else:
+            html=self.browser.page_source
+            bsobj=BeautifulSoup(html,"html.parser")
+            playerINFO = bsobj.findAll('p',{"class":"PlayerSummary_playerStatValue__3hvQY"})
+            dataColumn = ["PPG", "RPG", "APG", "PIE"]
+            nameofplayer=bsobj.findAll('p',{"class":"PlayerSummary_playerNameText__K7ZXO"})
+            datanum=0
+            IMG = bsobj.findAll('img',{'class':'PlayerImage_image__1smob w-10/12 mx-auto mt-16 md:mt-24'})
+            self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]["playerIMG"] = IMG[0]["src"]
+            for i in playerINFO:
+                self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]["State"][dataColumn[datanum]] = i.get_text()  #teamlist=tname 
+                datanum+=1
+            infoOfPlayer=bsobj.findAll('p',{"class":"PlayerSummary_playerInfoValue__mSfou"})
+            infolabel=bsobj.findAll('p',{"class":"PlayerSummary_playerInfoLabel__gBXXP"})
+            infolist=[]
+            for k in infolabel:
+                infolist.append(k.get_text())
+            infonum=0
+            for ii in infoOfPlayer:
+                self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]["Info"][infolist[infonum]] = ii.get_text()  #teamlist=tname 
+                infonum+=1
+        print(nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()," DONE")
 
     def writeData(self):
         with open("data.json", "w") as f:
