@@ -12,7 +12,8 @@ class Fetch:
             self.start()
 
     def start(self):
-        os.mkdir("./teamPic")
+        if not os.path.exists("./teamPic"):
+            os.mkdir("./teamPic")
         self.setBrowser()
         self.getTeams()
         self.writeData()
