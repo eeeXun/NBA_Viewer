@@ -1,7 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-#from cairosvg import svg2png
+from cairosvg import svg2png
 import os, json
 
 class Fetch:
@@ -51,7 +51,7 @@ class Fetch:
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
             imgURL = self.browser.find_element_by_class_name("TeamHeader_teamLogoBW__QkK7w.TeamLogo_logo__1CmT9").get_attribute("src")
             imgPath = "./teamPic/{}.png".format(teamName)
-            #svg2png(url=imgURL, write_to=imgPath)
+            svg2png(url=imgURL, write_to=imgPath)
             self.data["teams"][teamName]["teamData"]["IMG"] = imgPath
             self.getPlayerName(link,teamName)
 
