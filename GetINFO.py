@@ -70,8 +70,10 @@ class Fetch:
             links=i.findAll('a')
             playerlink.append("https://www.nba.com"+links[0]["href"])
         self.writeData()
+        blank=0
         for plink in playerlink:
-            self.getPlayerInfo(plink,teamName)
+            if(self.data["teams"][teamName]["playerData"][playername2[blank].get_text()]["Info"]["PLAYER_NUMBER"]!=""):
+                self.getPlayerInfo(plink,teamName)
     def getPlayerInfo(self,link,thisteam):
         self.browser.get(link)
         if self.browser.find_element_by_tag_name("body").text == self.badGateway:
@@ -99,7 +101,7 @@ class Fetch:
                 self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]["Info"][infolist[infonum]] = ii.get_text()  #teamlist=tname 
                 infonum+=1
         self.writeData()
-           
+        print(nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()," DONE")   
     def writeData(self):
         with open("data.json", "w") as f:
             json.dump(self.data, f)
