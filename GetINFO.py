@@ -1,6 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+from cairosvg import svg2png
 import os, json
 
 class Fetch:
@@ -11,6 +12,7 @@ class Fetch:
             self.start()
 
     def start(self):
+        os.mkdir("./teamPic")
         self.setBrowser()
         self.getTeams()
         self.writeData()
@@ -46,8 +48,10 @@ class Fetch:
             dataColumn = ["PPG", "RPG", "APG", "OPPG"]
             for i in range(4):
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
-            IMG = self.browser.find_element_by_class_name("TeamHeader_teamLogoBW__QkK7w.TeamLogo_logo__1CmT9").get_attribute("src")
-            self.data["teams"][teamName]["teamData"]["IMG"] = IMG
+            imgURL = self.browser.find_element_by_class_name("TeamHeader_teamLogoBW__QkK7w.TeamLogo_logo__1CmT9").get_attribute("src")
+            imgPath = "./teamPic/{}.png".format(teamName)
+            svg2png(url=imgURL, write_to=imgPath)
+            self.data["teams"][teamName]["teamData"]["IMG"] = imgPath
 
     def writeData(self):
         with open("data.json", "w") as f:
