@@ -2,7 +2,7 @@
 
 -   Install packages
     -   `pip install -r requirements.txt`
--   You need to have a `drivePath.txt` file, which contains your [chrome drive](https://sites.google.com/chromium.org/driver/), in this repository
+-   You need to have a `drivePath.txt` file, which contains the path of your [chrome drive](https://sites.google.com/chromium.org/driver/), in this repository
 -   `GetINFO.py` would generate `data.json`, and `UI.py` would take this data to draw someting
 -   Start
     -   `python main.py`
@@ -11,7 +11,6 @@
 
 -   "teams"
     -   "Boston Celtics"
-        -"playerIMG":"https://cdn.nba.com/headshots/nba/latest/1040x760/1628369.png"
         -   "teamData"
             -   "PPG": 112.6
             -   "RPG": 44.3
@@ -36,6 +35,7 @@
                     -   "RPG"
                     -   "APG"
                     -   "OPPG"
+                -   "playerIMG": "https://cdn.nba.com/headshots/nba/latest/1040x760/1628369.png"
             -   "Carsen Edwards"
                 -   ...
     -   "Brooklyn Nets"

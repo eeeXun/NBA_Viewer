@@ -91,7 +91,7 @@ class Fetch:
             IMG = bsobj.findAll('img',{'class':'PlayerImage_image__1smob w-10/12 mx-auto mt-16 md:mt-24'})
             self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]["playerIMG"] = IMG[0]["src"]
             for i in playerINFO:
-                self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]["State"][dataColumn[datanum]] = i.get_text()  #teamlist=tname 
+                self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]["State"][dataColumn[datanum]] = i.get_text()  #teamlist=tname
                 datanum+=1
             infoOfPlayer=bsobj.findAll('p',{"class":"PlayerSummary_playerInfoValue__mSfou"})
             infolabel=bsobj.findAll('p',{"class":"PlayerSummary_playerInfoLabel__gBXXP"})
@@ -100,7 +100,7 @@ class Fetch:
                 infolist.append(k.get_text())
             infonum=0
             for ii in infoOfPlayer:
-                self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]["Info"][infolist[infonum]] = ii.get_text()  #teamlist=tname 
+                self.data["teams"][thisteam]["playerData"][nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()]["Info"][infolist[infonum]] = ii.get_text()  #teamlist=tname
                 infonum+=1
         print(nameofplayer[0].get_text()+" "+nameofplayer[1].get_text()," DONE")
 
