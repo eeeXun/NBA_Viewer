@@ -1,4 +1,3 @@
-from buff import get2Player
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
@@ -22,7 +21,7 @@ class Fetch:
         with open("drivePath.txt", "r") as f:
             self.drivePath = f.read()[:-1]
         options = webdriver.ChromeOptions()
-        #options.add_argument("-headless")
+        options.add_argument("-headless")
         self.browser = webdriver.Chrome(executable_path=self.drivePath,
                                         options=options)
     
@@ -45,12 +44,14 @@ class Fetch:
             self.getTeamDatas(teamName, link)
         else:
             self.getPlayerName(link,teamName)
+            print(teamName,"finish")
             teamINFO = self.browser.find_elements_by_class_name("TeamHeader_rankValue__1pj3i")
             dataColumn = ["PPG", "RPG", "APG", "OPPG"]
             for i in range(4):
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
             IMG = self.browser.find_element_by_class_name("TeamHeader_teamLogoBW__QkK7w.TeamLogo_logo__1CmT9").get_attribute("src")
             self.data["teams"][teamName]["teamData"]["IMG"] = IMG
+            
             
     def getPlayerName(self,link,teamName):
         html=self.browser.page_source
@@ -102,6 +103,7 @@ class Fetch:
             json.dump(self.data, f)
 
     def end(self):
+        print("Crawler All Done")
         self.browser.close()
 
 if __name__ == "__main__":
