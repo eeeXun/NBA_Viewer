@@ -1,7 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from cairosvg import svg2png
+#from cairosvg import svg2png
 import os, json
 
 class Fetch:
@@ -51,7 +51,7 @@ class Fetch:
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
             imgURL = self.browser.find_element_by_class_name("TeamHeader_teamLogoBW__QkK7w.TeamLogo_logo__1CmT9").get_attribute("src")
             imgPath = "./teamPic/{}.png".format(teamName)
-            svg2png(url=imgURL, write_to=imgPath)
+            #svg2png(url=imgURL, write_to=imgPath)
             self.data["teams"][teamName]["teamData"]["IMG"] = imgPath
             self.getPlayerName(link,teamName)
 
@@ -65,17 +65,16 @@ class Fetch:
         q=0
         t=0
         for i in playername2:
-            self.data["teams"][teamName]["playerData"][i.get_text()]={"Info":{},"State":{}}
-            self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_POSITION"]=playerpos[2+q*9].get_text()
-            self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_NUMBER"]=playernum[q].get_text()
+            if(playernum[q].get_text()!=""):
+                self.data["teams"][teamName]["playerData"][i.get_text()]={"Info":{},"State":{}}
+                self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_POSITION"]=playerpos[2+q*9].get_text()
+                self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_NUMBER"]=playernum[q].get_text()
+                links=i.findAll('a')
+                playerlink.append("https://www.nba.com"+links[0]["href"])
+                self.writeData()
             q+=1
-            links=i.findAll('a')
-            playerlink.append("https://www.nba.com"+links[0]["href"])
-        self.writeData()
-        blank=0
         for plink in playerlink:
-            if(self.data["teams"][teamName]["playerData"][playername2[blank].get_text()]["Info"]["PLAYER_NUMBER"]!=""):
-                self.getPlayerInfo(plink,teamName)
+            self.getPlayerInfo(plink,teamName)
 
     def getPlayerInfo(self,link,thisteam):
         self.browser.get(link)
