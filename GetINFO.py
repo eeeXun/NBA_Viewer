@@ -65,17 +65,16 @@ class Fetch:
         q=0
         t=0
         for i in playername2:
-            self.data["teams"][teamName]["playerData"][i.get_text()]={"Info":{},"State":{}}
-            self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_POSITION"]=playerpos[2+q*9].get_text()
-            self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_NUMBER"]=playernum[q].get_text()
+            if(playernum[q].get_text()!=""):
+                self.data["teams"][teamName]["playerData"][i.get_text()]={"Info":{},"State":{}}
+                self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_POSITION"]=playerpos[2+q*9].get_text()
+                self.data["teams"][teamName]["playerData"][i.get_text()]["Info"]["PLAYER_NUMBER"]=playernum[q].get_text()
+                links=i.findAll('a')
+                playerlink.append("https://www.nba.com"+links[0]["href"])
+                self.writeData()
             q+=1
-            links=i.findAll('a')
-            playerlink.append("https://www.nba.com"+links[0]["href"])
-        self.writeData()
-        blank=0
         for plink in playerlink:
-            if(self.data["teams"][teamName]["playerData"][playername2[blank].get_text()]["Info"]["PLAYER_NUMBER"]!=""):
-                self.getPlayerInfo(plink,teamName)
+            self.getPlayerInfo(plink,teamName)
 
     def getPlayerInfo(self,link,thisteam):
         self.browser.get(link)
