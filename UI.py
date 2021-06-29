@@ -18,10 +18,7 @@ class MyApp(Tk):
         self.teamList = Listbox(self, width=25, height=40, font=myFont)
         self.playerList = Listbox(self, width=25, height=20, font=myFont)
         self.teamIMG = HTMLLabel(self, width=20, height=20, font=myFont)
-        self.teamPPG = Label(self, width=25, font=myFont)
-        self.teamRPG = Label(self, width=25, font=myFont)
-        self.teamAPG = Label(self, width=25, font=myFont)
-        self.teamOPPG = Label(self, width=25, font=myFont)
+        self.teamDatas = [Label(self, width=25, font=myFont) for i in range(4)]
         self.updateLB = Label(self, text="Update Time: {}".format(self.updateTime()), font=myFont)
         # Teams label
         Label(self, text="Teams", font=myFont).grid(row=0, column=0)
@@ -29,10 +26,8 @@ class MyApp(Tk):
         Button(self, text="Reload", font=myFont).grid(row=0, column=3, sticky="e")
         self.teamList.grid(row=1, column=0, rowspan=5)
         self.teamIMG.grid(row=1, column=1, rowspan=4)
-        self.teamPPG.grid(row=1, column=2)
-        self.teamRPG.grid(row=2, column=2)
-        self.teamAPG.grid(row=3, column=2)
-        self.teamOPPG.grid(row=4, column=2)
+        for i in range(4):
+            self.teamDatas[i].grid(row=i+1, column=2)
         self.playerList.grid(row=5, column=1, columnspan=2)
         self.updateLB.grid(row=6)
 
@@ -52,6 +47,12 @@ class MyApp(Tk):
     def showTeam(self, team):
         IMG = self.data["teams"][team]["teamData"]["IMG"]
         self.teamIMG.set_html('<img src="{}" width="200" height="200">'.format(IMG))
+        dataSet= ["PPG", "RPG", "APG", "OPPG"]
+        for i in range(4):
+            self.teamDatas[i].config(text=
+                                     dataSet[i]
+                                     + ": "
+                                     + self.data["teams"][team]["teamData"][dataSet[i]])
 
     def setPlayer(self, team):
         players = self.data["teams"][team]["playerData"].keys()
