@@ -17,7 +17,7 @@ class MyApp(Tk):
         myFont = "Monospace 13"
         self.teamList = Listbox(self, width=25, height=40, font=myFont)
         self.playerList = Listbox(self, width=25, height=20, font=myFont)
-        self.teamIMG = HTMLLabel(self, width=20, height=20, font=myFont)
+        self.teamIMG = HTMLLabel(self, width=25, height=20, font=myFont)
         self.teamDatas = [Label(self, width=25, font=myFont) for i in range(4)]
         self.updateLB = Label(self, text="Update Time: {}".format(self.updateTime()), font=myFont)
         # Teams label
@@ -46,7 +46,7 @@ class MyApp(Tk):
 
     def showTeam(self, team):
         IMG = self.data["teams"][team]["teamData"]["IMG"]
-        self.teamIMG.set_html('<img src="{}" width="200" height="200">'.format(IMG))
+        self.teamIMG.set_html('<img src="{}" width="250" height="200">'.format(IMG))
         dataSet= ["PPG", "RPG", "APG", "OPPG"]
         for i in range(4):
             self.teamDatas[i].config(text=

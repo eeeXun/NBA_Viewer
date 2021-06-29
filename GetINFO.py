@@ -1,20 +1,21 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from cairosvg import svg2png
+from tqdm import tqdm
 import os, json
 
 class Fetch:
     def __init__(self):
-        if not os.path.exists("data.json"):
-            self.data = {}
-            self.badGateway = "An error (502 Bad Gateway) has occurred in response to this request."
+        self.badGateway = "An error (502 Bad Gateway) has occurred in response to this request."
+        if not (os.path.exists("data.json") and os.path.exists("./teamPic/")):
             self.start()
 
     def start(self):
         if not os.path.exists("./teamPic"):
             os.mkdir("./teamPic")
+        self.data = {}
         self.setBrowser()
+        self.progress = tqdm(total=30)
         self.getTeams()
         self.writeData()
         self.end()
@@ -39,6 +40,7 @@ class Fetch:
             profileLink = urljoin(url, profile)
             self.data["teams"][teamName] = {"teamData":{}, "playerData": {}}
             self.getTeamDatas(teamName, profileLink)
+            self.progress.update()
 
     def getTeamDatas(self, teamName, link):
         self.browser.get(link)
@@ -50,10 +52,14 @@ class Fetch:
             for i in range(4):
                 self.data["teams"][teamName]["teamData"][dataColumn[i]] = teamINFO[i].text
             imgURL = self.browser.find_element_by_class_name("TeamHeader_teamLogoBW__QkK7w.TeamLogo_logo__1CmT9").get_attribute("src")
-            imgPath = "./teamPic/{}.png".format(teamName)
-            svg2png(url=imgURL, write_to=imgPath)
-            self.data["teams"][teamName]["teamData"]["IMG"] = imgPath
             self.getPlayerName(link,teamName)
+            self.getTeamIMG(teamName, imgURL)
+
+    def getTeamIMG(self, teamName, imgURL):
+        self.browser.get(imgURL)
+        imgPath = "./teamPic/{}.png".format(teamName)
+        self.browser.save_screenshot(imgPath)
+        self.data["teams"][teamName]["teamData"]["IMG"] = imgPath
 
     def getPlayerName(self,link,teamName):
         html=self.browser.page_source
