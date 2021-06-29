@@ -16,7 +16,7 @@ class MyApp(Tk):
     def setupUI(self):
         myFont = "Monospace 13"
         self.teamList = Listbox(self, width=25, height=40, font=myFont)
-        self.playerList = Listbox(self, height=20, font=myFont)
+        self.playerList = Listbox(self, width=25, height=20, font=myFont)
         self.teamIMG = HTMLLabel(self, width=20, height=20, font=myFont)
         self.teamPPG = Label(self, width=25, font=myFont)
         self.teamRPG = Label(self, width=25, font=myFont)
@@ -46,11 +46,17 @@ class MyApp(Tk):
     def teamSelected(self, event):
         selection = self.teamList.curselection()
         team = self.teamList.get(selection)
-        self.teamDisplay(team)
+        self.showTeam(team)
+        self.setPlayer(team)
 
-    def teamDisplay(self, team):
+    def showTeam(self, team):
         IMG = self.data["teams"][team]["teamData"]["IMG"]
         self.teamIMG.set_html('<img src="{}" width="200" height="200">'.format(IMG))
+
+    def setPlayer(self, team):
+        players = self.data["teams"][team]["playerData"].keys()
+        self.playerList.delete(0, END)
+        self.playerList.insert(END, *players)
 
 if __name__ == "__main__":
     myApp = MyApp()
