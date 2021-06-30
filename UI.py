@@ -8,6 +8,7 @@ class MyApp(Tk):
         self.data = self.getData()
         self.setupUI()
         self.setTeam()
+        self.team=""
 
     def getData(self):
         with open("data.json", "r") as f:
@@ -15,6 +16,7 @@ class MyApp(Tk):
 
     def setupUI(self):
         myFont = "Monospace 13"
+        self.title("NBA_Viewer")
         self.teamList = Listbox(self, width=25, height=40, font=myFont)
         self.playerList = Listbox(self, width=25, height=20, font=myFont)
         self.teamIMG = HTMLLabel(self, width=25, height=20, font=myFont)
@@ -23,7 +25,8 @@ class MyApp(Tk):
         # Teams label
         Label(self, text="Teams", font=myFont).grid(row=0, column=0)
         # Reload button
-        Button(self, text="Reload", font=myFont).grid(row=0, column=3, sticky="e")
+        Button(self, text="Reload", font=myFont).grid(row=6, column=3, sticky="e")
+        Button(self,text="Show Info",font=myFont,command=self.popOutPlayer).grid(row=6,column=1, columnspan=2)
         self.teamList.grid(row=1, column=0, rowspan=5)
         self.teamIMG.grid(row=1, column=1, rowspan=4)
         for i in range(4):
@@ -39,8 +42,9 @@ class MyApp(Tk):
         self.teamList.bind("<<ListboxSelect>>", self.teamSelected)
 
     def teamSelected(self, event):
-        selection = self.teamList.curselection()
+        selection = self.teamList.curselection() 
         team = self.teamList.get(selection)
+        self.team=team
         self.showTeam(team)
         self.setPlayer(team)
 
@@ -58,6 +62,19 @@ class MyApp(Tk):
         players = self.data["teams"][team]["playerData"].keys()
         self.playerList.delete(0, END)
         self.playerList.insert(END, *players)
+
+    def popOutPlayer(self):
+        pSelection = self.playerList.curselection()
+        tSelection = self.teamList.curselection()
+        player=self.playerList.get(pSelection[0])
+        win =Toplevel()
+        win.wm_title(player+"'s Info")
+        name = Label(win, text=player)
+        team=Label(win,text=self.team)
+        name.pack()
+        team.pack()
+        b = Button(win, text="Okay", command=win.destroy)
+        b.pack()   
 
 if __name__ == "__main__":
     myApp = MyApp()
