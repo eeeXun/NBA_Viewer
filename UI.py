@@ -1,7 +1,9 @@
 from tkinter import *
 from tkhtmlview import HTMLLabel
 import os, time, json
-
+from PIL import Image, ImageTk
+import io
+from urllib.request import urlopen
 class MyApp(Tk):
     def __init__(self):
         super().__init__()
@@ -69,13 +71,44 @@ class MyApp(Tk):
         player=self.playerList.get(pSelection[0])
         win =Toplevel()
         win.wm_title(player+"'s Info")
-        name = Label(win, text=player)
+        name = Label(win, text=player) 
         team=Label(win,text=self.team)
         name.pack()
         team.pack()
+        infoframe=Frame(win)
+        for info in self.data["teams"][self.team]["playerData"][player]["Info"]:
+            data=info+":    "+self.data["teams"][self.team]["playerData"][player]["Info"][info]
+            keylabel=Label(infoframe,text=data)
+            #valuelabel=Label(win)
+            keylabel.pack()
+            #valuelabel.pack()
+        stateframe=Frame(win)
+        for state in self.data["teams"][self.team]["playerData"][player]["State"]:
+            data=state+":    "+self.data["teams"][self.team]["playerData"][player]["State"][state]
+            keylabel=Label(stateframe,text=data)
+            #valuelabel=Label(win)
+            keylabel.pack()
+            #valuelabel.pack()
+    
+        imageframe=Frame(win) 
+        imageframe.pack()
+        self.postPlayerImage(self.team,player,imageframe) 
+        infoframe.pack(side='right')
+        stateframe.pack()
         b = Button(win, text="Okay", command=win.destroy)
         b.pack()   
+    def postPlayerImage(self,team,player,frame):
+        url=self.data["teams"][team]["playerData"][player]["playerIMG"]
+        image_bytes = urlopen(url).read()
+        data_stream = io.BytesIO(image_bytes)
+        pil_image = Image.open(data_stream)
+        pil_image = pil_image.resize((450, 350), Image.ANTIALIAS)
+        tk_image = ImageTk.PhotoImage(pil_image)
+        label = Label(frame, image=tk_image, bg='white')
+        label.pack(padx=5, pady=5)
+
 
 if __name__ == "__main__":
     myApp = MyApp()
     myApp.mainloop()
+
