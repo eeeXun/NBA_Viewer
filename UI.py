@@ -69,44 +69,43 @@ class MyApp(Tk):
         pSelection = self.playerList.curselection()
         tSelection = self.teamList.curselection()
         player=self.playerList.get(pSelection[0])
-        win =Toplevel()
+        win =Toplevel(width=400,height=500)
         win.wm_title(player+"'s Info")
-        name = Label(win, text=player) 
+        name = Label(win, text=player,font='(,25,)') 
         team=Label(win,text=self.team)
-        name.pack()
-        team.pack()
         infoframe=Frame(win)
+        frame1=Frame(infoframe)
+        frame2=Frame(infoframe)
         for info in self.data["teams"][self.team]["playerData"][player]["Info"]:
             data=info+":    "+self.data["teams"][self.team]["playerData"][player]["Info"][info]
             keylabel=Label(infoframe,text=data)
             #valuelabel=Label(win)
             keylabel.pack()
             #valuelabel.pack()
-        stateframe=Frame(win)
+        frame1.pack()
+        imageframe=Frame(win) 
+        stateframe=Frame(imageframe,width=50,height=100)
         for state in self.data["teams"][self.team]["playerData"][player]["State"]:
             data=state+":    "+self.data["teams"][self.team]["playerData"][player]["State"][state]
-            keylabel=Label(stateframe,text=data)
+            keylabel=Label(stateframe,text=data,font='(,50,)',padx=100)
             #valuelabel=Label(win)
             keylabel.pack()
             #valuelabel.pack()
-    
-        imageframe=Frame(win) 
-        imageframe.pack()
-        self.postPlayerImage(self.team,player,imageframe) 
-        infoframe.pack(side='right')
-        stateframe.pack()
+        stateframe.pack(side='right')
+        self.postPlayerImage(self.team,player,imageframe)
         b = Button(win, text="Okay", command=win.destroy)
-        b.pack()   
+        name.pack()
+        team.pack()
+        imageframe.pack(side='top') 
+        
+        infoframe.pack()
+        b.pack(side='bottom')
+
     def postPlayerImage(self,team,player,frame):
         url=self.data["teams"][team]["playerData"][player]["playerIMG"]
-        image_bytes = urlopen(url).read()
-        data_stream = io.BytesIO(image_bytes)
-        pil_image = Image.open(data_stream)
-        pil_image = pil_image.resize((450, 350), Image.ANTIALIAS)
-        tk_image = ImageTk.PhotoImage(pil_image)
-        label = Label(frame, image=tk_image, bg='white')
-        label.pack(padx=5, pady=5)
-
+        html="<img src="+url+" width=\"300\" height=\"220\"> </img>"
+        lbl = HTMLLabel(frame, html=html)
+        lbl.pack()
 
 if __name__ == "__main__":
     myApp = MyApp()
