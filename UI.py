@@ -1,9 +1,8 @@
 from tkinter import *
 from tkhtmlview import HTMLLabel
-import os, time, json
-from PIL import Image, ImageTk
+import os, json
 import io
-from urllib.request import urlopen
+
 class MyApp(Tk):
     def __init__(self):
         super().__init__()
@@ -23,11 +22,13 @@ class MyApp(Tk):
         self.playerList = Listbox(self, width=25, height=20, font=myFont)
         self.teamIMG = HTMLLabel(self, width=25, height=20, font=myFont)
         self.teamDatas = [Label(self, width=25, font=myFont) for i in range(4)]
-        self.updateLB = Label(self, text="Update Time: {}".format(self.updateTime()), font=myFont)
+        self.updateLB = Label(self, text="Update Time: {}".format(self.data["updateTime"]),
+                              font=myFont)
         # Teams label
         Label(self, text="Teams", font=myFont).grid(row=0, column=0)
         # Reload button
         Button(self, text="Reload", font=myFont).grid(row=6, column=3, sticky="e")
+        # Show player button
         Button(self,text="Show Info",font=myFont,command=self.popOutPlayer).grid(row=6,column=1, columnspan=2)
         self.teamList.grid(row=1, column=0, rowspan=5)
         self.teamIMG.grid(row=1, column=1, rowspan=4)
@@ -36,15 +37,12 @@ class MyApp(Tk):
         self.playerList.grid(row=5, column=1, columnspan=2)
         self.updateLB.grid(row=6)
 
-    def updateTime(self):
-        return time.ctime(os.path.getmtime("data.json"))
-
     def setTeam(self):
         self.teamList.insert(END, *self.data["teams"].keys())
         self.teamList.bind("<<ListboxSelect>>", self.teamSelected)
 
     def teamSelected(self, event):
-        selection = self.teamList.curselection() 
+        selection = self.teamList.curselection()
         team = self.teamList.get(selection)
         self.team=team
         self.showTeam(team)
@@ -71,7 +69,7 @@ class MyApp(Tk):
         player=self.playerList.get(pSelection[0])
         win =Toplevel(width=400,height=500)
         win.wm_title(player+"'s Info")
-        name = Label(win, text=player,font='(,25,)') 
+        name = Label(win, text=player,font='(,25,)')
         team=Label(win,text=self.team)
         infoframe=Frame(win)
         frame1=Frame(infoframe)
@@ -83,7 +81,7 @@ class MyApp(Tk):
             keylabel.pack()
             #valuelabel.pack()
         frame1.pack()
-        imageframe=Frame(win) 
+        imageframe=Frame(win)
         stateframe=Frame(imageframe,width=50,height=100)
         for state in self.data["teams"][self.team]["playerData"][player]["State"]:
             data=state+":    "+self.data["teams"][self.team]["playerData"][player]["State"][state]
@@ -96,8 +94,8 @@ class MyApp(Tk):
         b = Button(win, text="Okay", command=win.destroy)
         name.pack()
         team.pack()
-        imageframe.pack(side='top') 
-        
+        imageframe.pack(side='top')
+
         infoframe.pack()
         b.pack(side='bottom')
 
@@ -110,4 +108,3 @@ class MyApp(Tk):
 if __name__ == "__main__":
     myApp = MyApp()
     myApp.mainloop()
-

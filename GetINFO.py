@@ -2,6 +2,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from tqdm import tqdm
+from datetime import datetime
 import os, json
 
 class Fetch:
@@ -108,6 +109,7 @@ class Fetch:
                 infonum+=1
 
     def writeData(self):
+        self.data["updateTime"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open("data.json", "w") as f:
             json.dump(self.data, f)
 
