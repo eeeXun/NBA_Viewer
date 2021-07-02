@@ -26,8 +26,10 @@ class MyApp(Tk):
         Label(self, text="Teams", font=myFont).grid(row=0, column=0)
         # Reload button
         Button(self, text="Reload", font=myFont, command=self.reloadData).grid(row=6, column=3, sticky="e")
+        # Close button
+        Button(self, text="Close", font=myFont, command=self.quit).grid(row=0, column=3, sticky="e")
         # Show player button
-        Button(self,text="Show Info",font=myFont,command=self.popOutPlayer).grid(row=6,column=1, columnspan=2)
+        Button(self, text="Show Info",font=myFont,command=self.popOutPlayer).grid(row=6,column=1, columnspan=2)
         self.teamList.grid(row=1, column=0, rowspan=5)
         self.teamIMG.grid(row=1, column=1, rowspan=4)
         for i in range(4):
@@ -41,8 +43,12 @@ class MyApp(Tk):
         # Clear all
         for item in self.grid_slaves():
             item.destroy()
+        updating = Label(self, text="Updating...", font="Monospace 20")
+        updating.pack()
+        self.update()
         # Reload data
         Fetch().start()
+        updating.destroy()
         # Redraw
         self.setupUI()
 
