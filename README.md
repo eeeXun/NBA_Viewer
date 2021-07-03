@@ -4,8 +4,8 @@ View the data of teams and players in NBA
 
 ## Screenshot
 
-![teamView](./demo/img1.png)
-![playerView](./demo/img2.png)
+![teamView](https://i.imgur.com/Y9vYXrK.png)
+![playerView](https://i.imgur.com/ivO9Whr.png)
 
 ## Usage
 
