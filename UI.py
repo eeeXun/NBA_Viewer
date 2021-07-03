@@ -18,7 +18,7 @@ class MyApp(Tk):
         self.title("NBA_Viewer")
         self.teamList = Listbox(self, width=25, height=40, font=myFont)
         self.playerList = Listbox(self, width=25, height=20, font=myFont)
-        self.teamIMG = HTMLLabel(self, width=25, height=9, font=myFont)
+        self.teamIMG = HTMLLabel(self, width=25, height=15, font=myFont)
         self.teamDatas = [Label(self, width=25, font=myFont) for i in range(4)]
         self.updateLB = Label(self, text="Update Time: {}".format(self.data["updateTime"]),
                               font=myFont)
@@ -83,41 +83,40 @@ class MyApp(Tk):
         player=self.playerList.get(pSelection[0])
         win =Toplevel(width=400,height=500)
         win.wm_title(player+"'s Info")
-        name = Label(win, text=player,font='(,25,)')
-        team=Label(win,text=self.team)
+        name = Label(win, text=player,font='(,50,)')
+        team=Label(win,text=self.team,font='(,30,)')
         infoframe=Frame(win)
         frame1=Frame(infoframe)
         frame2=Frame(infoframe)
         for info in self.data["teams"][self.team]["playerData"][player]["Info"]:
             data=info+":    "+self.data["teams"][self.team]["playerData"][player]["Info"][info]
-            keylabel=Label(infoframe,text=data)
+            keylabel=Label(infoframe,text=data,font='(,30,)')
             #valuelabel=Label(win)
             keylabel.pack()
             #valuelabel.pack()
         frame1.pack()
         imageframe=Frame(win)
-        stateframe=Frame(imageframe,width=50,height=100)
+        stateframe=Frame(win)
         for state in self.data["teams"][self.team]["playerData"][player]["State"]:
             data=state+":    "+self.data["teams"][self.team]["playerData"][player]["State"][state]
-            keylabel=Label(stateframe,text=data,font='(,50,)',padx=100)
+            keylabel=Label(stateframe,text=data,font='(,50,)')
             #valuelabel=Label(win)
-            keylabel.pack()
+            keylabel.pack(side=LEFT)
             #valuelabel.pack()
-        stateframe.pack(side='right')
         self.postPlayerImage(self.team,player,imageframe)
         b = Button(win, text="Okay", command=win.destroy)
         name.pack()
         team.pack()
-        imageframe.pack(side='top')
-
+        imageframe.pack(anchor=E)
+        stateframe.pack()
         infoframe.pack()
         b.pack(side='bottom')
 
     def postPlayerImage(self,team,player,frame):
         url=self.data["teams"][team]["playerData"][player]["playerIMG"]
-        html="<img src="+url+" width=\"300\" height=\"220\"> </img>"
+        html="<img src="+url+" width=\"600\" height=\"440\"> </img>"
         lbl = HTMLLabel(frame, html=html)
-        lbl.pack()
+        lbl.pack(anchor=E)
 
 if __name__ == "__main__":
     myApp = MyApp()
