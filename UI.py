@@ -18,7 +18,7 @@ class MyApp(Tk):
         self.title("NBA_Viewer")
         self.teamList = Listbox(self, width=25, height=40, font=myFont)
         self.playerList = Listbox(self, width=25, height=20, font=myFont)
-        self.teamIMG = HTMLLabel(self, width=25, height=9, font=myFont)
+        self.teamIMG = HTMLLabel(self, width=25, height=15, font=myFont)
         self.teamDatas = [Label(self, width=25, font=myFont) for i in range(4)]
         self.updateLB = Label(self, text="Update Time: {}".format(self.data["updateTime"]),
                               font=myFont)
