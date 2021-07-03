@@ -1,13 +1,22 @@
+# NBA Viewer
+
+View the data of teams and players in NBA
+
+## Screenshot
+
+![teamView](./demo/img1.png)
+![playerView](./demo/img2.png)
+
 ## Usage
 
 -   Install packages
     -   `pip install -r requirements.txt`
 -   You need to have a `drivePath.txt` file, which contains the path of your [chrome drive](https://sites.google.com/chromium.org/driver/), in this repository
--   `GetINFO.py` would generate `data.json`, and `UI.py` would take this data to draw someting
 -   Start
     -   `python main.py`
+-   `GetINFO.py` would generate `data.json` file and `teamPic` folder, then `UI.py` would take this data to draw the user interface
 
-## `data.json` Structure
+## The structure of `data.json`
 
 -   "teams"
     -   "Boston Celtics"
